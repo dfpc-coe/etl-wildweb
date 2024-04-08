@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { Type, TSchema } from '@sinclair/typebox';
+import { Static, Type, TSchema } from '@sinclair/typebox';
 import { FeatureCollection, Feature, Geometry } from 'geojson';
 import ETL, { Event, SchemaType } from '@tak-ps/etl';
 
@@ -13,23 +13,25 @@ try {
     console.log('ok - no .env file loaded');
 }
 
+const Environment = Type.Object({
+    'DispatchCenters': Type.Array(Type.Object({
+        CenterCode: Type.Optional(Type.String({
+            description: 'The Shortcode for the WildWeb Dispatch Center'
+        })),
+    }), {
+        description: 'Inreach Share IDs to pull data from',
+        display: 'table',
+    }),
+    'DEBUG': Type.Boolean({
+        default: false,
+        description: 'Print results in logs'
+    })
+})
+
 export default class Task extends ETL {
     static async schema(type: SchemaType = SchemaType.Input): Promise<TSchema> {
         if (type === SchemaType.Input) {
-            return Type.Object({
-                'DispatchCenters': Type.Array(Type.Object({
-                    CenterCode: Type.Optional(Type.String({
-                        description: 'The Shortcode for the WildWeb Dispatch Center'
-                    })),
-                }), {
-                    description: 'Inreach Share IDs to pull data from',
-                    display: 'table',
-                }),
-                'DEBUG': Type.Boolean({
-                    default: false,
-                    description: 'Print results in logs'
-                })
-            })
+            return Environment;
         } else {
             return Type.Object({
                 incidentDate: Type.String({ format: 'date-time', description: 'Incident Date' }),
@@ -53,7 +55,8 @@ export default class Task extends ETL {
 
         const obtains = [];
 
-        for (const center of layer.environment.DispatchCenters) {
+        const env = layer.environment as Static<typeof Environment>;
+        for (const center of env.DispatchCenters) {
             obtains.push((async (center): Promise<Feature[]> => {
                 console.log(`ok - requesting ${center.CenterCode}`);
 
