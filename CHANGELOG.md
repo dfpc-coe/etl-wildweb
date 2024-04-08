@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.2.2
+
+- :arrow_up: Bugfixes in base lib
+
 ### v1.2.1
 
 - :arrow_up: Use new dep types

@@ -1,6 +1,6 @@
 import { Static, Type, TSchema } from '@sinclair/typebox';
 import { FeatureCollection, Feature, Geometry } from 'geojson';
-import ETL, { Event, SchemaType } from '@tak-ps/etl';
+import ETL, { Event, SchemaType, handler as internal, local } from '@tak-ps/etl';
 
 const Environment = Type.Object({
     'DispatchCenters': Type.Array(Type.Object({
@@ -18,7 +18,7 @@ const Environment = Type.Object({
 })
 
 export default class Task extends ETL {
-    static async schema(type: SchemaType = SchemaType.Input): Promise<TSchema> {
+    async schema(type: SchemaType = SchemaType.Input): Promise<TSchema> {
         if (type === SchemaType.Input) {
             return Environment;
         } else {
@@ -89,7 +89,8 @@ export default class Task extends ETL {
     }
 }
 
-const handler = Task.handler;
-await Task.local(import.meta.url);
-export { handler };
+await local(new Task(), import.meta.url);
+export async function handler(event: Event = {}) {
+    return await internal(new Task(), event);
+}
 
