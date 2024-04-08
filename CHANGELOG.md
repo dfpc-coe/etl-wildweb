@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.0.2
+
+- :bug: Fix coordinate parsing as the API returns invalid coords (longs are + instead of - float values)
+
 ### v1.0.1
 
 - :rocket: Add Environment typing

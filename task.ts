@@ -50,12 +50,12 @@ export default class Task extends ETL {
     async control(): Promise<void> {
         const layer = await this.fetchLayer();
 
-        if (!layer.environment.DispatchCenters) throw new Error('No DispatchCenters Provided');
-        if (!Array.isArray(layer.environment.SPOT_MAP_SHARES)) throw new Error('DispatchCenters must be an array');
+        const env = layer.environment as Static<typeof Environment>;
+        if (!env.DispatchCenters) throw new Error('No DispatchCenters Provided');
+        if (!Array.isArray(env.DispatchCenters)) throw new Error('DispatchCenters must be an array');
 
         const obtains = [];
 
-        const env = layer.environment as Static<typeof Environment>;
         for (const center of env.DispatchCenters) {
             obtains.push((async (center): Promise<Feature[]> => {
                 console.log(`ok - requesting ${center.CenterCode}`);
@@ -63,7 +63,7 @@ export default class Task extends ETL {
                 const url = new URL(`/centers/${center.CenterCode}/incidents`, 'https://snknmqmon6.execute-api.us-west-2.amazonaws.com')
 
                 const centerres = await fetch(url);
-                const body = (await centerres.json()).data;
+                const body = (await centerres.json())[0].data;
 
                 const features: Feature[] = [];
 
@@ -80,7 +80,7 @@ export default class Task extends ETL {
                         },
                         geometry: {
                             type: 'Point',
-                            coordinates: [ Number(fire.longitude), Number(fire.latitude) ]
+                            coordinates: [ Number(fire.longitude) * -1, Number(fire.latitude) ]
                         }
                     };
 
