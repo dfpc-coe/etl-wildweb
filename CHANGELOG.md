@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.0.1
+
+- :rocket: Add Environment typing
+
 ### v1.0.0
 
 - :tada: Initial Commit
