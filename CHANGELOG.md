@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.2.1
+
+- :arrow_up: Use new dep types
+
 ### v1.2.0
 
 - :rocket: Make requests sequentially to beat API Gateway Rate Limiting (on their side)
