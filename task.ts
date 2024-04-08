@@ -1,17 +1,6 @@
-import fs from 'node:fs';
 import { Static, Type, TSchema } from '@sinclair/typebox';
 import { FeatureCollection, Feature, Geometry } from 'geojson';
 import ETL, { Event, SchemaType } from '@tak-ps/etl';
-
-try {
-    const dotfile = new URL('.env', import.meta.url);
-
-    fs.accessSync(dotfile);
-
-    Object.assign(process.env, JSON.parse(String(fs.readFileSync(dotfile))));
-} catch (err) {
-    console.log('ok - no .env file loaded');
-}
 
 const Environment = Type.Object({
     'DispatchCenters': Type.Array(Type.Object({
@@ -63,7 +52,8 @@ export default class Task extends ETL {
                 const url = new URL(`/centers/${center.CenterCode}/incidents`, 'https://snknmqmon6.execute-api.us-west-2.amazonaws.com')
 
                 const centerres = await fetch(url);
-                const body = (await centerres.json())[0].data;
+                const json = await centerres.json();
+                const body = json[0].data;
 
                 const features: Feature[] = [];
 
@@ -105,15 +95,7 @@ export default class Task extends ETL {
     }
 }
 
-export async function handler(event: Event = {}) {
-    if (event.type === 'schema:input') {
-        return await Task.schema(SchemaType.Input);
-    } else if (event.type === 'schema:output') {
-        return await Task.schema(SchemaType.Output);
-    } else {
-        const task = new Task();
-        await task.control();
-    }
-}
+const handler = Task.handler;
+await Task.local(import.meta.url);
+export { handler };
 
-if (import.meta.url === `file://${process.argv[1]}`) handler();

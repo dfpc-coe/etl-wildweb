@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.1.0
+
+- :rocket: Clean up code by using shared fns in Task
+
 ### v1.0.2
 
 - :bug: Fix coordinate parsing as the API returns invalid coords (longs are + instead of - float values)
