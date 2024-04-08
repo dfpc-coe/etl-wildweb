@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.2.0
+
+- :rocket: Make requests sequentially to beat API Gateway Rate Limiting (on their side)
+
 ### v1.1.0
 
 - :rocket: Clean up code by using shared fns in Task

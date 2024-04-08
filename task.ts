@@ -43,52 +43,46 @@ export default class Task extends ETL {
         if (!env.DispatchCenters) throw new Error('No DispatchCenters Provided');
         if (!Array.isArray(env.DispatchCenters)) throw new Error('DispatchCenters must be an array');
 
-        const obtains = [];
-
-        for (const center of env.DispatchCenters) {
-            obtains.push((async (center): Promise<Feature[]> => {
-                console.log(`ok - requesting ${center.CenterCode}`);
-
-                const url = new URL(`/centers/${center.CenterCode}/incidents`, 'https://snknmqmon6.execute-api.us-west-2.amazonaws.com')
-
-                const centerres = await fetch(url);
-                const json = await centerres.json();
-                const body = json[0].data;
-
-                const features: Feature[] = [];
-
-                console.log(`ok - ${center.CenterCode} has ${body.length} messages`);
-
-                for (const fire of body) {
-                    const feat: Feature<Geometry, Record<string, string>> = {
-                        id: `wildweb-${fire.uuid}`,
-                        type: 'Feature',
-                        properties: {
-                            callsign: fire.name,
-                            time: new Date(fire.date).toJSON(),
-                            start: new Date(fire.date).toJSON()
-                        },
-                        geometry: {
-                            type: 'Point',
-                            coordinates: [ Number(fire.longitude) * -1, Number(fire.latitude) ]
-                        }
-                    };
-
-                    features.push(feat);
-                }
-
-                return features;
-            })(center))
-        }
-
         const fc: FeatureCollection = {
             type: 'FeatureCollection',
             features: []
         }
 
-        for (const res of await Promise.all(obtains)) {
-            if (!res || !res.length) continue;
-            fc.features.push(...res);
+        for (const center of env.DispatchCenters) {
+            console.log(`ok - requesting ${center.CenterCode}`);
+
+            const url = new URL(`/centers/${center.CenterCode}/incidents`, 'https://snknmqmon6.execute-api.us-west-2.amazonaws.com')
+
+            const centerres = await fetch(url);
+            const json = await centerres.json();
+
+            if (!Array.isArray(json)) {
+                console.error(centerres.headers)
+                console.log(`not ok - Unparsable Body: ${center.CenterCode}: ${JSON.stringify(json)}`);
+                return;
+            }
+
+            const body = json[0].data;
+
+            console.log(`ok - ${center.CenterCode} has ${body.length} messages`);
+
+            for (const fire of body) {
+                const feat: Feature<Geometry, Record<string, string>> = {
+                    id: `wildweb-${fire.uuid}`,
+                    type: 'Feature',
+                    properties: {
+                        callsign: fire.name,
+                        time: new Date(fire.date).toJSON(),
+                        start: new Date(fire.date).toJSON()
+                    },
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [ Number(fire.longitude) * -1, Number(fire.latitude) ]
+                    }
+                };
+
+                fc.features.push(feat);
+            }
         }
 
         await this.submit(fc);
