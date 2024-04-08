@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.3.0
+
+- :arrow_up: Add time cutoff
+
 ### v1.2.2
 
 - :arrow_up: Bugfixes in base lib

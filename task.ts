@@ -3,6 +3,14 @@ import { FeatureCollection, Feature, Geometry } from 'geojson';
 import ETL, { Event, SchemaType, handler as internal, local } from '@tak-ps/etl';
 
 const Environment = Type.Object({
+    IncidentRange: Type.String({
+        description: 'Filter Incidents within the follow time range',
+        enum: [
+            '24 Hours',
+            '48 Hours',
+            '1 Week'
+        ]
+    }),
     'DispatchCenters': Type.Array(Type.Object({
         CenterCode: Type.Optional(Type.String({
             description: 'The Shortcode for the WildWeb Dispatch Center'
