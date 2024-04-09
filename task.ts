@@ -1,6 +1,6 @@
 import { Static, Type, TSchema } from '@sinclair/typebox';
 import { FeatureCollection, Feature, Geometry } from 'geojson';
-import ETL, { Event, SchemaType, handler as internal, local } from '@tak-ps/etl';
+import ETL, { Event, SchemaType, handler as internal, local, env } from '@tak-ps/etl';
 
 const Environment = Type.Object({
     IncidentRange: Type.String({
@@ -31,6 +31,7 @@ export default class Task extends ETL {
             return Environment;
         } else {
             return Type.Object({
+                incidentIC: Type.String({ description: 'Incident Commander' }),
                 incidentDate: Type.String({ format: 'date-time', description: 'Incident Date' }),
                 incidentName: Type.String({ description: 'Incident Name' }),
                 incidentType: Type.String({ description: 'Incident Type' }),
@@ -81,7 +82,17 @@ export default class Task extends ETL {
                     properties: {
                         callsign: fire.name,
                         time: new Date(fire.date).toJSON(),
-                        start: new Date(fire.date).toJSON()
+                        start: new Date(fire.date).toJSON(),
+                        incidentIC: fire.ic,
+                        incidentDate: fire.date,
+                        incidentName: fire.name,
+                        incidentType: fire.type,
+                        incidentUuid: fire.uuid,
+                        incidentAcres: fire.acres,
+                        incidentFuels: fire.fuels,
+                        incidentIncNum: fire.inc_num,
+                        incidentFireNum: fire.fire_num,
+                        incidentComment: fire.webComment
                     },
                     geometry: {
                         type: 'Point',
@@ -97,6 +108,7 @@ export default class Task extends ETL {
     }
 }
 
+env(import.meta.url)
 await local(new Task(), import.meta.url);
 export async function handler(event: Event = {}) {
     return await internal(new Task(), event);
