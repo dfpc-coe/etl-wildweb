@@ -10,6 +10,11 @@
 
 ## Version History
 
+### v1.4.0
+
+- :arrow_up: Update Base ETL
+- :rocket: Include IC & add properties
+
 ### v1.3.0
 
 - :arrow_up: Add time cutoff
