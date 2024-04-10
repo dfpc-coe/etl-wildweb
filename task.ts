@@ -80,7 +80,7 @@ export default class Task extends ETL {
                 if (env.IncidentRange) {
                     const duration = parseInt(env.IncidentRange.split(' ')[0]);
                     const unit = env.IncidentRange.split(' ')[1] === 'Hours' ? 'hours' : 'week';
-                    
+
                     if (moment(fire.date).isBefore(moment().subtract(duration, unit))) {
                         continue;
                     }
@@ -91,8 +91,6 @@ export default class Task extends ETL {
                     type: 'Feature',
                     properties: {
                         callsign: fire.name,
-                        time: new Date(fire.date).toJSON(),
-                        start: new Date(fire.date).toJSON(),
                         incidentIC: fire.ic,
                         incidentDate: fire.date,
                         incidentName: fire.name,
