@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.5.0
+
+- :rocket: Add support for incident filtering
+
 ### v1.4.0
 
 - :arrow_up: Update Base ETL
