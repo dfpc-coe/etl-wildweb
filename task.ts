@@ -77,8 +77,13 @@ export default class Task extends ETL {
             console.log(`ok - ${center.CenterCode} has ${body.length} messages`);
 
             for (const fire of body) {
-                if (env.IncidentRange && moment(fire.date).isBefore(moment().subtract(parseInt(env.IncidentRange.split(' ')[0]), env.IncidentRange.split(' ')[1]))) {
-                     continue;
+                if (env.IncidentRange) {
+                    const duration = parseInt(env.IncidentRange.split(' ')[0]);
+                    const unit = env.IncidentRange.split(' ')[1] === 'Hours' ? 'hours' : 'week';
+                    
+                    if (moment(fire.date).isBefore(moment().subtract(duration, unit))) {
+                        continue;
+                    }
                 }
 
                 const feat: Feature<Geometry, Record<string, string>> = {
