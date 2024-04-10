@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { Static, Type, TSchema } from '@sinclair/typebox';
 import { FeatureCollection, Feature, Geometry } from 'geojson';
 import ETL, { Event, SchemaType, handler as internal, local, env } from '@tak-ps/etl';
@@ -76,6 +77,10 @@ export default class Task extends ETL {
             console.log(`ok - ${center.CenterCode} has ${body.length} messages`);
 
             for (const fire of body) {
+                if (env.IncidentRange && moment(fire.date).isBefore(moment().subtract(parseInt(env.IncidentRange.split(' ')[0]), env.IncidentRange.split(' ')[1]))) {
+                     continue;
+                }
+
                 const feat: Feature<Geometry, Record<string, string>> = {
                     id: `wildweb-${fire.uuid}`,
                     type: 'Feature',
