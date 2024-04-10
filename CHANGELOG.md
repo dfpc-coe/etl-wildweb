@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.7.0
+
+- :rocket: Remove fire time and just use current time
+
 ### v1.6.0
 
 - :rocket: Add unit parsing
