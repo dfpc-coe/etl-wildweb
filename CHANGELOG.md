@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.7.1
+
+- :arrow_up: Update ETL Dep
+
 ### v1.7.0
 
 - :rocket: Remove fire time and just use current time
