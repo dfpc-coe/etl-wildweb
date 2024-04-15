@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v2.0.1
+
+- :bug: Update properties response
+
 ### v2.0.0
 
 - :rocket: Use of metadata property
