@@ -93,16 +93,18 @@ export default class Task extends ETL {
                     type: 'Feature',
                     properties: {
                         callsign: fire.name,
-                        incidentIC: fire.ic,
-                        incidentDate: fire.date,
-                        incidentName: fire.name,
-                        incidentType: fire.type,
-                        incidentUuid: fire.uuid,
-                        incidentAcres: fire.acres,
-                        incidentFuels: fire.fuels,
-                        incidentIncNum: fire.inc_num,
-                        incidentFireNum: fire.fire_num,
-                        incidentComment: fire.webComment
+                        metadata: {
+                            incidentIC: fire.ic,
+                            incidentDate: fire.date,
+                            incidentName: fire.name,
+                            incidentType: fire.type,
+                            incidentUuid: fire.uuid,
+                            incidentAcres: fire.acres,
+                            incidentFuels: fire.fuels,
+                            incidentIncNum: fire.inc_num,
+                            incidentFireNum: fire.fire_num,
+                            incidentComment: fire.webComment
+                        }
                     },
                     geometry: {
                         type: 'Point',

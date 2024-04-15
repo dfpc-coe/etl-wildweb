@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v2.0.0
+
+- :rocket: Use of metadata property
+
 ### v1.8.0
 
 - :rocket: Experiement with date features
