@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v2.0.2
+
+- :arrow_up: Update Base ETL
+
 ### v2.0.1
 
 - :bug: Update properties response
