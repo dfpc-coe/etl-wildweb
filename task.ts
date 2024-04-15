@@ -86,6 +86,8 @@ export default class Task extends ETL {
                     }
                 }
 
+                fire.date = moment(fire.date).seconds(0).milliseconds(0).toISOString().replace(/:00.000Z/, '').replace('T', ' ');
+
                 const feat: Feature<Geometry, Record<string, string>> = {
                     id: `wildweb-${fire.uuid}`,
                     type: 'Feature',

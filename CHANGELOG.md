@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.8.0
+
+- :rocket: Experiement with date features
+
 ### v1.7.2
 
 - :arrow_up: Update ETL Dep
