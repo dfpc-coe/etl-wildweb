@@ -2,6 +2,26 @@ import moment from 'moment';
 import { Static, Type, TSchema } from '@sinclair/typebox';
 import { FeatureCollection, Feature, Geometry } from 'geojson';
 import ETL, { Event, SchemaType, handler as internal, local, env } from '@tak-ps/etl';
+import { fetch } from '@tak-ps/etl';
+
+const WildCadIncident = Type.Object({
+    ic: Type.Union([Type.String(), Type.Null()]),
+    date: Type.String(),
+    name: Type.String(),
+    type: Type.String(),
+    uuid: Type.String(),
+    acres: Type.Union([Type.String(), Type.Null()]),
+    fuels: Type.Union([Type.String(), Type.Null()]),
+    inc_num: Type.Union([Type.String(), Type.Null()]),
+    fire_num: Type.Union([Type.String(), Type.Null()]),
+    latitude: Type.Union([Type.String(), Type.Null()]),
+    location:  Type.Union([Type.String(), Type.Null()]),
+    longitude: Type.Union([Type.String(), Type.Null()]),
+    resources: Type.Array(Type.Any()),
+    webComment: Type.Union([Type.String(), Type.Null()]),
+    fire_status: Type.String(),
+    fiscal_data: Type.String(),
+});
 
 const Environment = Type.Object({
     IncidentRange: Type.String({
@@ -16,10 +36,7 @@ const Environment = Type.Object({
         CenterCode: Type.Optional(Type.String({
             description: 'The Shortcode for the WildWeb Dispatch Center'
         })),
-    }), {
-        description: 'Inreach Share IDs to pull data from',
-        display: 'table',
-    }),
+    })),
     'DEBUG': Type.Boolean({
         default: false,
         description: 'Print results in logs'
@@ -64,9 +81,12 @@ export default class Task extends ETL {
             const url = new URL(`/centers/${center.CenterCode}/incidents`, 'https://snknmqmon6.execute-api.us-west-2.amazonaws.com')
 
             const centerres = await fetch(url);
-            const json = await centerres.json();
+            const json = await centerres.typed(Type.Array(Type.Object({
+                retrieved: Type.String(),
+                data: Type.Array(WildCadIncident)
+            })));
 
-            if (!Array.isArray(json)) {
+            if (json.length !== 1) {
                 console.error(centerres.headers)
                 console.log(`not ok - Unparsable Body: ${center.CenterCode}: ${JSON.stringify(json)}`);
                 return;
@@ -87,6 +107,12 @@ export default class Task extends ETL {
                 }
 
                 fire.date = moment(fire.date).seconds(0).milliseconds(0).toISOString().replace(/:00.000Z/, '').replace('T', ' ');
+
+                // We only pass along valid geospatial data
+                if (
+                    !fire.longitude || isNaN(Number(fire.longitude)) || Number(fire.longitude) === 0
+                    || !fire.latitude || isNaN(Number(fire.latitude)) || Number(fire.latitude) === 0
+                ) continue;
 
                 const feat: Feature<Geometry, Record<string, any>> = {
                     id: `wildweb-${fire.uuid}`,

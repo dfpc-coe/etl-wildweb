@@ -10,6 +10,12 @@
 
 ## Version History
 
+### v2.1.0
+
+- :rocket: Avoid Null Island or invalid geometries
+- :rocket: Use Typed Fetch Calls
+- :arrow_up: Update Base ETL
+
 ### v2.0.2
 
 - :arrow_up: Update Base ETL
