@@ -10,6 +10,11 @@
 
 ## Version History
 
+### v3.0.0
+
+- :rocket: Pass all fields through unchanged
+- :arrow_up: Update to latest ETL Base to support `format` in fetch
+
 ### v2.1.0
 
 - :rocket: Avoid Null Island or invalid geometries

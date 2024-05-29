@@ -6,7 +6,7 @@ import { fetch } from '@tak-ps/etl';
 
 const WildCadIncident = Type.Object({
     ic: Type.Union([Type.String(), Type.Null()]),
-    date: Type.String(),
+    date: Type.String({ format: 'date-time' }),
     name: Type.String(),
     type: Type.String(),
     uuid: Type.String(),
@@ -48,18 +48,7 @@ export default class Task extends ETL {
         if (type === SchemaType.Input) {
             return Environment;
         } else {
-            return Type.Object({
-                incidentIC: Type.String({ description: 'Incident Commander' }),
-                incidentDate: Type.String({ format: 'date-time', description: 'Incident Date' }),
-                incidentName: Type.String({ description: 'Incident Name' }),
-                incidentType: Type.String({ description: 'Incident Type' }),
-                incidentUuid: Type.String({ description: 'Incident UUID' }),
-                incidentAcres: Type.String({ description: 'Incident Acres' }),
-                incidentFuels: Type.String({ description: 'Incident Fuels' }),
-                incidentIncNum: Type.String({ description: 'Incident Incident Num' }),
-                incidentFireNum: Type.String({ description: 'Incident Fire Num' }),
-                incidentComment: Type.String({ description: 'Incident Web Comment' })
-            })
+            return WildCadIncident;
         }
     }
 
@@ -120,16 +109,7 @@ export default class Task extends ETL {
                     properties: {
                         callsign: fire.name,
                         metadata: {
-                            incidentIC: fire.ic,
-                            incidentDate: fire.date,
-                            incidentName: fire.name,
-                            incidentType: fire.type,
-                            incidentUuid: fire.uuid,
-                            incidentAcres: fire.acres,
-                            incidentFuels: fire.fuels,
-                            incidentIncNum: fire.inc_num,
-                            incidentFireNum: fire.fire_num,
-                            incidentComment: fire.webComment
+                            ...fire
                         }
                     },
                     geometry: {
