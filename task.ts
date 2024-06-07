@@ -70,9 +70,10 @@ export default class Task extends ETL {
             const url = new URL(`/centers/${center.CenterCode}/incidents`, 'https://snknmqmon6.execute-api.us-west-2.amazonaws.com')
 
             const centerres = await fetch(url);
+
             const json = await centerres.typed(Type.Array(Type.Object({
                 retrieved: Type.String(),
-                data: Type.Array(WildCadIncident)
+                data: Type.Union([Type.Null(), Type.Array(WildCadIncident)])
             })));
 
             if (json.length !== 1) {
@@ -82,6 +83,11 @@ export default class Task extends ETL {
             }
 
             const body = json[0].data;
+
+            if (body === null) {
+                console.log(`ok - ${center.CenterCode} has 0 messages`);
+                continue;
+            }
 
             console.log(`ok - ${center.CenterCode} has ${body.length} messages`);
 

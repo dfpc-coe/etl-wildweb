@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v3.1.0
+
+- :rocket: Dispatch centers occasionally return `Null` as the data object instead of an empty array
+
 ### v3.0.0
 
 - :rocket: Pass all fields through unchanged
