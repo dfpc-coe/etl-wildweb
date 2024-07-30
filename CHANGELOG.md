@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v3.2.0
+
+- :arrow_up: Update to latest core deps
+
 ### v3.1.0
 
 - :rocket: Dispatch centers occasionally return `Null` as the data object instead of an empty array

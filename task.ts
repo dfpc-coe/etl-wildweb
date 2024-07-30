@@ -53,11 +53,7 @@ export default class Task extends ETL {
     }
 
     async control(): Promise<void> {
-        const layer = await this.fetchLayer();
-
-        const env = layer.environment as Static<typeof Environment>;
-        if (!env.DispatchCenters) throw new Error('No DispatchCenters Provided');
-        if (!Array.isArray(env.DispatchCenters)) throw new Error('DispatchCenters must be an array');
+        const env = await this.env(Environment);
 
         const fc: FeatureCollection = {
             type: 'FeatureCollection',
