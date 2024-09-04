@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Static, Type, TSchema } from '@sinclair/typebox';
+import { Type, TSchema } from '@sinclair/typebox';
 import { FeatureCollection, Feature } from 'geojson';
 import ETL, { Event, SchemaType, handler as internal, local, env } from '@tak-ps/etl';
 import { fetch } from '@tak-ps/etl';
