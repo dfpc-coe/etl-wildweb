@@ -10,6 +10,11 @@
 
 ## Version History
 
+### v3.3.0
+
+- :rocket: Add HTTP Status code handling
+- :arrow_up: Update to latest core deps
+
 ### v3.2.0
 
 - :arrow_up: Update to latest core deps
