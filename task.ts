@@ -1,6 +1,6 @@
 import moment from 'moment';
-import { Static, Type, TSchema } from '@sinclair/typebox';
-import { FeatureCollection, Feature, Geometry } from 'geojson';
+import { Type, TSchema } from '@sinclair/typebox';
+import { FeatureCollection, Feature } from 'geojson';
 import ETL, { Event, SchemaType, handler as internal, local, env } from '@tak-ps/etl';
 import { fetch } from '@tak-ps/etl';
 
@@ -67,6 +67,10 @@ export default class Task extends ETL {
 
             const centerres = await fetch(url);
 
+            if (!centerres.ok) {
+                throw new Error(`Failed to Fetch WildCAD Data: ${await centerres.text()}`)
+            }
+
             const json = await centerres.typed(Type.Array(Type.Object({
                 retrieved: Type.String(),
                 data: Type.Union([Type.Null(), Type.Array(WildCadIncident)])
@@ -105,7 +109,7 @@ export default class Task extends ETL {
                     || !fire.latitude || isNaN(Number(fire.latitude)) || Number(fire.latitude) === 0
                 ) continue;
 
-                const feat: Feature<Geometry, Record<string, any>> = {
+                const feat: Feature = {
                     id: `wildweb-${fire.uuid}`,
                     type: 'Feature',
                     properties: {
