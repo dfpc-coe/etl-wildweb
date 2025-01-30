@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v3.4.0
+
+- :tada: Add Capabilities API
+
 ### v3.3.0
 
 - :rocket: Add HTTP Status code handling

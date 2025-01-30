@@ -1,7 +1,6 @@
 import moment from 'moment';
-import { Type, TSchema } from '@sinclair/typebox';
-import { FeatureCollection, Feature } from 'geojson';
-import ETL, { Event, SchemaType, handler as internal, local, env } from '@tak-ps/etl';
+import { Static, Type, TSchema } from '@sinclair/typebox';
+import ETL, { Event, SchemaType, handler as internal, local, InputFeatureCollection, InputFeature, DataFlowType, InvocationType } from '@tak-ps/etl';
 import { fetch } from '@tak-ps/etl';
 
 const WildCadIncident = Type.Object({
@@ -44,18 +43,29 @@ const Environment = Type.Object({
 })
 
 export default class Task extends ETL {
-    async schema(type: SchemaType = SchemaType.Input): Promise<TSchema> {
-        if (type === SchemaType.Input) {
-            return Environment;
+    static name = 'etl-wildweb';
+    static flow = [ DataFlowType.Incoming ];
+    static invocation = [ InvocationType.Schedule ];
+
+    async schema(
+        type: SchemaType = SchemaType.Input,
+        flow: DataFlowType = DataFlowType.Incoming
+    ): Promise<TSchema> {
+        if (flow === DataFlowType.Incoming) {
+            if (type === SchemaType.Input) {
+                return Environment;
+            } else {
+                return WildCadIncident;
+            }
         } else {
-            return WildCadIncident;
+            return Type.Object({});
         }
     }
 
     async control(): Promise<void> {
         const env = await this.env(Environment);
 
-        const fc: FeatureCollection = {
+        const fc: Static<typeof InputFeatureCollection> = {
             type: 'FeatureCollection',
             features: []
         }
@@ -109,7 +119,7 @@ export default class Task extends ETL {
                     || !fire.latitude || isNaN(Number(fire.latitude)) || Number(fire.latitude) === 0
                 ) continue;
 
-                const feat: Feature = {
+                const feat: Static<typeof InputFeature> = {
                     id: `wildweb-${fire.uuid}`,
                     type: 'Feature',
                     properties: {
@@ -132,9 +142,8 @@ export default class Task extends ETL {
     }
 }
 
-env(import.meta.url)
-await local(new Task(), import.meta.url);
+await local(new Task(import.meta.url), import.meta.url);
 export async function handler(event: Event = {}) {
-    return await internal(new Task(), event);
+    return await internal(new Task(import.meta.url), event);
 }
 
