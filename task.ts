@@ -70,7 +70,7 @@ export default class Task extends ETL {
             features: []
         }
 
-        const errors: Errors[] = [];
+        const errors: Error[] = [];
         for (const center of env.DispatchCenters) {
             try {
                 console.log(`ok - requesting ${center.CenterCode}`);

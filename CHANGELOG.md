@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.1.1
+
+- :bug: TS Fix
+
 ### v4.1.0
 
 - :rocket: Error resilience
