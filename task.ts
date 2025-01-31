@@ -70,75 +70,89 @@ export default class Task extends ETL {
             features: []
         }
 
+        const errors: Errors[] = [];
         for (const center of env.DispatchCenters) {
-            console.log(`ok - requesting ${center.CenterCode}`);
+            try {
+                console.log(`ok - requesting ${center.CenterCode}`);
 
-            const url = new URL(`/centers/${center.CenterCode}/incidents`, 'https://snknmqmon6.execute-api.us-west-2.amazonaws.com')
+                const url = new URL(`/centers/${center.CenterCode}/incidents`, 'https://snknmqmon6.execute-api.us-west-2.amazonaws.com')
 
-            const centerres = await fetch(url);
+                const centerres = await fetch(url);
 
-            if (!centerres.ok) {
-                throw new Error(`Failed to Fetch WildCAD Data: ${await centerres.text()}`)
-            }
-
-            const json = await centerres.typed(Type.Array(Type.Object({
-                retrieved: Type.String(),
-                data: Type.Union([Type.Null(), Type.Array(WildCadIncident)])
-            })));
-
-            if (json.length !== 1) {
-                console.error(centerres.headers)
-                console.log(`not ok - Unparsable Body: ${center.CenterCode}: ${JSON.stringify(json)}`);
-                return;
-            }
-
-            const body = json[0].data;
-
-            if (body === null) {
-                console.log(`ok - ${center.CenterCode} has 0 messages`);
-                continue;
-            }
-
-            console.log(`ok - ${center.CenterCode} has ${body.length} messages`);
-
-            for (const fire of body) {
-                if (env.IncidentRange) {
-                    const duration = parseInt(env.IncidentRange.split(' ')[0]);
-                    const unit = env.IncidentRange.split(' ')[1] === 'Hours' ? 'hours' : 'week';
-
-                    if (moment(fire.date).isBefore(moment().subtract(duration, unit))) {
-                        continue;
-                    }
+    console.error(url);
+                if (!centerres.ok) {
+                    throw new Error(`Failed to Fetch WildCAD Data: ${await centerres.text()}`)
                 }
 
-                fire.date = moment(fire.date).seconds(0).milliseconds(0).toISOString().replace(/:00.000Z/, '').replace('T', ' ');
+                const json = await centerres.typed(Type.Array(Type.Object({
+                    retrieved: Type.String(),
+                    data: Type.Union([Type.Null(), Type.Array(WildCadIncident)])
+                })));
 
-                // We only pass along valid geospatial data
-                if (
-                    !fire.longitude || isNaN(Number(fire.longitude)) || Number(fire.longitude) === 0
-                    || !fire.latitude || isNaN(Number(fire.latitude)) || Number(fire.latitude) === 0
-                ) continue;
+                if (json.length !== 1) {
+                    console.error(centerres.headers)
+                    console.log(`not ok - Unparsable Body: ${center.CenterCode}: ${JSON.stringify(json)}`);
+                    return;
+                }
 
-                const feat: Static<typeof InputFeature> = {
-                    id: `wildweb-${fire.uuid}`,
-                    type: 'Feature',
-                    properties: {
-                        callsign: fire.name,
-                        metadata: {
-                            ...fire
+                const body = json[0].data;
+
+                if (body === null) {
+                    console.log(`ok - ${center.CenterCode} has 0 messages`);
+                    continue;
+                }
+
+                console.log(`ok - ${center.CenterCode} has ${body.length} messages`);
+
+                for (const fire of body) {
+                    if (env.IncidentRange) {
+                        const duration = parseInt(env.IncidentRange.split(' ')[0]);
+                        const unit = env.IncidentRange.split(' ')[1] === 'Hours' ? 'hours' : 'week';
+
+                        if (moment(fire.date).isBefore(moment().subtract(duration, unit))) {
+                            continue;
                         }
-                    },
-                    geometry: {
-                        type: 'Point',
-                        coordinates: [ Number(fire.longitude) * -1, Number(fire.latitude) ]
                     }
-                };
 
-                fc.features.push(feat);
+                    fire.date = moment(fire.date).seconds(0).milliseconds(0).toISOString().replace(/:00.000Z/, '').replace('T', ' ');
+
+                    // We only pass along valid geospatial data
+                    if (
+                        !fire.longitude || isNaN(Number(fire.longitude)) || Number(fire.longitude) === 0
+                        || !fire.latitude || isNaN(Number(fire.latitude)) || Number(fire.latitude) === 0
+                    ) continue;
+
+                    const feat: Static<typeof InputFeature> = {
+                        id: `wildweb-${fire.uuid}`,
+                        type: 'Feature',
+                        properties: {
+                            callsign: fire.name,
+                            metadata: {
+                                ...fire
+                            }
+                        },
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [ Number(fire.longitude) * -1, Number(fire.latitude) ]
+                        }
+                    };
+
+                    fc.features.push(feat);
+                }
+            } catch (err) {
+                errors.push(err instanceof Error ? err : new Error(err));
             }
         }
 
         await this.submit(fc);
+
+        if (errors.length) {
+            for (const err of errors) {
+                console.error(err)
+            }
+
+            throw new Error('Errors during processing');
+        }
     }
 }
 

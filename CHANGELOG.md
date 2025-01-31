@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.1.0
+
+- :rocket: Error resilience
+
 ### v4.0.0
 
 - :tada: Update to `CloudTAK@v6`
