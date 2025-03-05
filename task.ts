@@ -28,6 +28,7 @@ const Environment = Type.Object({
         enum: [
             '24 Hours',
             '48 Hours',
+            '72 Hours',
             '1 Week'
         ]
     }),
@@ -79,7 +80,6 @@ export default class Task extends ETL {
 
                 const centerres = await fetch(url);
 
-    console.error(url);
                 if (!centerres.ok) {
                     throw new Error(`Failed to Fetch WildCAD Data: ${await centerres.text()}`)
                 }

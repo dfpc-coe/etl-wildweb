@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.2.0
+
+- :rocket: Add 72 hour option
+
 ### v4.1.1
 
 - :bug: TS Fix
