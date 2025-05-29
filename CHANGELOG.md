@@ -10,6 +10,14 @@
 
 ## Version History
 
+### v4.4.0
+
+- :rocket: Update Deps & introduce actual start time
+
+### v4.3.0
+
+- :rocket: Add 72 hour option
+
 ### v4.2.0
 
 - :rocket: Add 72 hour option

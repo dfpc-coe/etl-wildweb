@@ -127,6 +127,7 @@ export default class Task extends ETL {
                         type: 'Feature',
                         properties: {
                             callsign: fire.name,
+                            start: fire.date,
                             metadata: {
                                 ...fire
                             }
