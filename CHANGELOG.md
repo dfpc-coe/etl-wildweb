@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.4.1
+
+- :rocket: Use new Init Fn
+
 ### v4.4.0
 
 - :rocket: Update Deps & introduce actual start time
