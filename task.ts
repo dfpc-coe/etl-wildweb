@@ -1,6 +1,7 @@
 import moment from 'moment';
+import { Feature } from '@tak-ps/node-cot';
 import { Static, Type, TSchema } from '@sinclair/typebox';
-import ETL, { Event, SchemaType, handler as internal, local, InputFeatureCollection, InputFeature, DataFlowType, InvocationType } from '@tak-ps/etl';
+import ETL, { Event, SchemaType, handler as internal, local, DataFlowType, InvocationType } from '@tak-ps/etl';
 import { fetch } from '@tak-ps/etl';
 
 const WildCadIncident = Type.Object({
@@ -66,7 +67,7 @@ export default class Task extends ETL {
     async control(): Promise<void> {
         const env = await this.env(Environment);
 
-        const fc: Static<typeof InputFeatureCollection> = {
+        const fc: Static<typeof Feature.InputFeatureCollection> = {
             type: 'FeatureCollection',
             features: []
         }
@@ -122,7 +123,7 @@ export default class Task extends ETL {
                         || !fire.latitude || isNaN(Number(fire.latitude)) || Number(fire.latitude) === 0
                     ) continue;
 
-                    const feat: Static<typeof InputFeature> = {
+                    const feat: Static<typeof Feature.InputFeature> = {
                         id: `wildweb-${fire.uuid}`,
                         type: 'Feature',
                         properties: {
