@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.5.0
+
+- :arrow_up: Update Core Deps
+
 ### v4.4.1
 
 - :rocket: Use new Init Fn
