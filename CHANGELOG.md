@@ -12,6 +12,10 @@
 
 ### v4.6.0
 
+- :arrow_up: Update Core Dependencies
+
+### v4.6.0
+
 - :arrow_up: Update Core Deps
 
 ### v4.5.0
