@@ -142,7 +142,7 @@ export default class Task extends ETL {
                     fc.features.push(feat);
                 }
             } catch (err) {
-                errors.push(err instanceof Error ? err : new Error(err));
+                errors.push(err instanceof Error ? err : new Error(String(err)));
             }
         }
 
