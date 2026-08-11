@@ -1,0 +1,27 @@
+{
+    "version": "1.0",
+    "name": "WildWeb CAD",
+    "description": "Ingests wildland fire incident dispatch data from WildWeb CAD and posts incidents to the map.",
+    "compute": {
+        "memory": 512,
+        "timeout": 60
+    },
+    "permissions": [
+        {
+            "resource": "feature:*",
+            "required": true,
+            "description": "WildWeb CAD posts wildland fire dispatch incidents to the map"
+        }
+    ],
+    "invocations": {
+        "incoming": {
+            "schedule": {
+                "description": "Polls WildWeb CAD for updated dispatch incidents on a schedule.",
+                "default": {
+                    "enabled": true,
+                    "schedule": "rate(1 minute)"
+                }
+            }
+        }
+    }
+}
