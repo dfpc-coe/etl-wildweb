@@ -44,6 +44,13 @@ const Environment = Type.Object({
     })
 })
 
+function isBeforeRange(date: string, range: string): boolean {
+    const duration = Number(range.split(' ')[0]);
+    const unit = range.split(' ')[1] === 'Hours' ? 'hours' : 'week';
+
+    return moment(date).isBefore(moment().subtract(duration, unit));
+}
+
 export default class Task extends ETL {
     static name = 'etl-wildweb';
     static flow = [ DataFlowType.Incoming ];
@@ -54,14 +61,10 @@ export default class Task extends ETL {
         flow: DataFlowType = DataFlowType.Incoming
     ): Promise<TSchema> {
         if (flow === DataFlowType.Incoming) {
-            if (type === SchemaType.Input) {
-                return Environment;
-            } else {
-                return WildCadIncident;
-            }
-        } else {
-            return Type.Object({});
+            return type === SchemaType.Input ? Environment : WildCadIncident;
         }
+
+        return Type.Object({});
     }
 
     async control(): Promise<void> {
@@ -106,14 +109,7 @@ export default class Task extends ETL {
                 console.log(`ok - ${center.CenterCode} has ${body.length} messages`);
 
                 for (const fire of body) {
-                    if (env.IncidentRange) {
-                        const duration = parseInt(env.IncidentRange.split(' ')[0]);
-                        const unit = env.IncidentRange.split(' ')[1] === 'Hours' ? 'hours' : 'week';
-
-                        if (moment(fire.date).isBefore(moment().subtract(duration, unit))) {
-                            continue;
-                        }
-                    }
+                    if (env.IncidentRange && isBeforeRange(fire.date, env.IncidentRange)) continue;
 
                     fire.date = moment(fire.date).seconds(0).milliseconds(0).toISOString().replace(/:00.000Z/, '').replace('T', ' ');
 
@@ -148,7 +144,7 @@ export default class Task extends ETL {
 
         await this.submit(fc);
 
-        if (errors.length) {
+        if (errors.length > 0) {
             for (const err of errors) {
                 console.error(err)
             }
@@ -159,7 +155,7 @@ export default class Task extends ETL {
 }
 
 await local(await Task.init(import.meta.url), import.meta.url);
-export async function handler(event: Event = {}) {
-    return await internal(await Task.init(import.meta.url), event);
+export async function handler(event: Event = {}): ReturnType<typeof internal> {
+    return internal(await Task.init(import.meta.url), event);
 }
 
