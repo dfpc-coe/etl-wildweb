@@ -12,6 +12,10 @@
 
 ### Pending Release
 
+### v4.15.1 - 2027-11-17
+
+- :bug: Ensure errors are surfaced
+
 ### v4.15.0 - 2027-11-17
 
 - :arrow_up: Update `@tak-ps/etl` to 11.x - Output schemas are published as named schemas, as required by CloudTAK v14

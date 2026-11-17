@@ -95,8 +95,7 @@ export default class Task extends ETL {
 
                 if (json.length !== 1) {
                     console.error(centerres.headers)
-                    console.log(`not ok - Unparsable Body: ${center.CenterCode}: ${JSON.stringify(json)}`);
-                    return;
+                    throw new Error(`Unparsable Body: ${center.CenterCode}: ${JSON.stringify(json)}`);
                 }
 
                 const body = json[0].data;
